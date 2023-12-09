@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" monitorInterval="60">
+    <Properties>
+        <Property name="LOG_PATTERN">
+            %d{dd/MM/yyyy HH:mm:ss}  %level{length=5} - %equals{[%X{ip}]}{[]}{%X{ip}} %equals{[%X{user}]}{[]}{%X{user}} [%c] [%msg]  %equals{[%X{wildcard1}]}{[]}{%X{wildcard1}} %equals{[%X{wildcard2}]}{[]}{%X{wildcard2}} %equals{[%X{wildcard3}]}{[]}{%X{wildcard3}} %n
+        </Property>
+        <Property name="ESTADISTICA_PATTERN">
+            %d{ISO8601} %level{length=5} - %msg%n
+        </Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="consoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <Routing name="RoutingAppender">
+
+            <Routes pattern="$${ctx:logFileName}">
+
+                <!-- Route for statistics only -->
+                <Route key="estadisticas">
+                    <RollingFile name="Rolling-${ctx:logFileName}"
+                                 fileName="/usr/local/tomcat/tvs/logs/${ctx:logFileName}"
+                                 filePattern="/usr/local/tomcat/tvs/logs/${ctx:logFileName}.%d{dd-MMM}.log.gz">
+                        <PatternLayout pattern="${ESTADISTICA_PATTERN}"/>
+                        <Policies>
+                            <TimeBasedTriggeringPolicy />
+                            <SizeBasedTriggeringPolicy size="80MB" />
+                        </Policies>
+                        <DefaultRolloverStrategy max="7"/>
+                    </RollingFile>
+                </Route>
+
+                <!-- Default Route for any other log -->
+                <Route>
+                    <RollingFile name="Rolling-${ctx:logFileName}"
+                                 fileName="/usr/local/tomcat/tvs/logs/${ctx:logFileName}"
+                                 filePattern="/usr/local/tomcat/tvs/logs/${ctx:logFileName}.%d{dd-MMM}.%i.log.gz">
+                        <PatternLayout pattern="${LOG_PATTERN}"/>
+                        <Policies>
+                            <TimeBasedTriggeringPolicy />
+                            <SizeBasedTriggeringPolicy size="120MB" />
+                        </Policies>
+                        <DefaultRolloverStrategy max="30"/>
+                    </RollingFile>
+                </Route>
+
+                <Route ref="consoleAppender" key="${ctx:logFileName}"/>
+            </Routes>
+
+        </Routing>
+
+        <Jdbc name="jdbcAppender" tableName="LOG_SYSTEM" >
+            <Filters>
+                <MarkerFilter marker="sql" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <DataSource jndiName="java:comp/env/DS/APP_LOG_DS" />
+            <Column name="LOG_DATE"  isEventTimestamp="true" />
+            <Column name="IP_ADDRESS" pattern="%X{ip}" />
+            <Column name="LOG_DNI_FK" pattern="%X{user}" />
+            <Column name="LOG_TYPE" pattern="%level{length=5}" />
+            <Column name="LOG_CLASS" pattern="%c" />
+            <Column name="LOG_DESCRIP" pattern="%msg" />
+            <Column name="WILDCARD_1" pattern="%X{wildcard1}" />
+            <Column name="WILDCARD_2" pattern="%X{wildcard2}" />
+            <Column name="WILDCARD_3" pattern="%X{wildcard3}" />
+
+        </Jdbc>
+
+    </Appenders>
+
+    <Loggers>
+        <Root level="debug" >
+            <AppenderRef ref="RoutingAppender"/>
+        </Root>
+
+        <Logger name="infoLog" level="info" additivity="true">
+            <AppenderRef ref="consoleAppender"/>
+        </Logger>
+        <Logger name="errorLog" level="error" additivity="true">
+            <AppenderRef ref="consoleAppender"/>
+        </Logger>
+
+        <Logger name="org.springframework" level="error" additivity="true">
+            <AppenderRef ref="consoleAppender"/>
+        </Logger>
+        <Logger name="springfox" level="error" additivity="true">
+            <AppenderRef ref="consoleAppender"/>
+        </Logger>
+        <Logger name="com.cgts.tvs.reception" level="ALL" additivity="true">
+            <AppenderRef ref="consoleAppender"/>
+        </Logger>
+
+    </Loggers>
+
+</Configuration>
