@@ -1,4 +1,4 @@
-FROM container-registry.oracle.com/database/enterprise:21.3.0.0
+FROM  quijadap/oracledatabase:12.2.0.1-se2
 # Define variables de entorno
 ENV DB_SID=TVS
 ENV DB_PDB=CGTS_SECURITY
@@ -14,9 +14,6 @@ ADD 00_DDL_DML_SECURITY.sql /home/oracle/scripts/setup/
 #COPY UPDATES_DDL/* /home/oracle/scripts/setup/
 USER root
 RUN chmod 777 /home/oracle/scripts/setup/importDB.sh \
-    && sed -i -e 's/\r$//' /home/oracle/scripts/setup/importDB.sh \
-    && echo 'echo Call importDB.sh to configure CGTS_SECURITY ' >> /home/oracle/setup/configDB.sh \
-    && echo '/bin/bash /home/oracle/scripts/setup/importDB.sh ' >> /home/oracle/setup/configDB.sh \
-    && echo 'echo CGTS_SECURITY configuration success!! ' >> /home/oracle/setup/configDB.sh
+    && sed -i -e 's/\r$//' /home/oracle/scripts/setup/importDB.sh
 
 USER oracle

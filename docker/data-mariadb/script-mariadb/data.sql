@@ -1,8 +1,8 @@
 --
 -- Create a database using `MYSQL_DATABASE` placeholder
 --
-CREATE DATABASE IF NOT EXISTS `samplesDocker`;
-USE `samplesDocker`;
+CREATE DATABASE IF NOT EXISTS `CustomerDB`;
+USE `CustomerDB`;
 
 DROP TABLE IF EXISTS s_customer;
 CREATE TABLE s_customer 
