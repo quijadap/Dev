@@ -2,8 +2,8 @@
 
 TAG=1.0.0
 
-P_DB=3306
-P_ENT=3306
+P_DB=33306
+P_ENT=33306
 DOCKER_REGISTRY=quijadap
 
 docker stop db-mysql
