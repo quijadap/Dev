@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS country (
   country_name varchar(450) NOT NULL,
   PRIMARY KEY (country_id)
 );
-
+INSERT INTO country VALUES (1, 'Venezuela');
 -- Creation of city table
 CREATE TABLE IF NOT EXISTS city (
   city_id INT NOT NULL,
